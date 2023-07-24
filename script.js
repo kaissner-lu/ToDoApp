@@ -17,25 +17,40 @@
 //14. was ist der aktuelle Zustand der Radiobuttonfilter? --> in state mit aufnehmen
 //zu 14. Hilfsvariable let todosByFilter erstellt - da speichern wir dann die gefilterten oder eben all, dann rendern wir - wie nach jeder Filterfunktion - in der renderfunktion haben wir denn todo.state dann ntürlich durch die neue hilfsvariable ersetzt.
 
+// 15. local storage implementieren: Ziel ist keine dummydaten im State, Daten sollen beim Starten der App aus dem local storage geladen werden
+
 //zu 5. und 7. und 12. 14.
 const addNewTodoButton = document.querySelector(".new-todo-add-button");
 const newTodoInput = document.querySelector(".new-todo-description");
 const removeButton = document.querySelector(".remove-done-todos-button");
 const radioButtonsFilter = document.querySelector(".radiobutton-filter-to-dos");
 
-//1.
+//1. bzw. 15
+/*
 const state = {
   currentFilter: "filter-all", //14. selbst gewählt, kann all, done oder open sein - dummydaten
 
-  todos: [
-    { id: 1, description: "clean room", done: false },
-    { id: 2, description: "work in garden", done: true },
-  ],
+  todos: [],
 };
-
+*/
 //14.
 
+let state = {};
+
 let todosByFilter = []; // 14. diese Variable wird jetzt in der render funktion ganz unten genutzt
+
+//15.
+function getStateFromLocalStorage() {
+  if (localStorage.getItem("state")) {
+    //Auslesen geht so aber erstmal müssen überhaupt Daten bereitgestellt werden,
+    // state = JSON.parse(localStorage.getItem("state"));
+    state = JSON.parse(localStorage.getItem("state"));
+  }
+}
+
+function updateLocalStorage() {
+  localStorage.setItem("state", JSON.stringify(state)); //diese Funktion brauchen wir immer, wenn ein todo erzeugt wurde
+}
 
 radioButtonsFilter.addEventListener("change", (event) => {
   const currentClickedFilter = event.target.id;
@@ -89,6 +104,9 @@ function addNewTodoToState(description1) {
 
 addNewTodoButton.addEventListener("click", () => {
   addNewTodoToState(newTodoInput.value); //hier wird der State aktualisiert, gibt der Variable description1 einen richtigen Wert, nämlich den Eintrag ins Inputfeld
+
+  updateLocalStorage();
+
   render(); // hier wird die ganze liste neugerendert - nachdem etwas im State hinzugefügt wurde
 
   //value des inputfelds nach dem Abschicken wieder löschen
@@ -136,4 +154,4 @@ function render() {
   }
 }
 
-render();
+getStateFromLocalStorage();
