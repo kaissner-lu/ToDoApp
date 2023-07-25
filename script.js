@@ -18,14 +18,17 @@
 //zu 14. Hilfsvariable let todosByFilter erstellt - da speichern wir dann die gefilterten oder eben all, dann rendern wir - wie nach jeder Filterfunktion - in der renderfunktion haben wir denn todo.state dann ntürlich durch die neue hilfsvariable ersetzt.
 
 // 15. local storage implementieren: Ziel ist keine dummydaten im State, Daten sollen beim Starten der App aus dem local storage geladen werden
+// man braucht dafür 2 Funktionen: getStateFromLocalStorage : wichtig per if abfragen ob es was auszulesen gibt und nur dann den state zu "getten"
+//die andere Funktion ist zum updaten und synchronisieren
 
-//zu 5. und 7. und 12. 14.
+
+
+
 const addNewTodoButton = document.querySelector(".new-todo-add-button");
 const newTodoInput = document.querySelector(".new-todo-description");
 const removeButton = document.querySelector(".remove-done-todos-button");
 const radioButtonsFilter = document.querySelector(".radiobutton-filter-to-dos");
 
-//1. bzw. 15
 /*
 const state = {
   currentFilter: "filter-all", //14. selbst gewählt, kann all, done oder open sein - dummydaten
@@ -33,23 +36,19 @@ const state = {
   todos: [],
 };
 */
-//14.
 
 let state = {};
 
-let todosByFilter = []; // 14. diese Variable wird jetzt in der render funktion ganz unten genutzt
+let todosByFilter = []; 
 
-//15.
 function getStateFromLocalStorage() {
   if (localStorage.getItem("state")) {
-    //Auslesen geht so aber erstmal müssen überhaupt Daten bereitgestellt werden,
-    // state = JSON.parse(localStorage.getItem("state"));
     state = JSON.parse(localStorage.getItem("state"));
   }
 }
 
 function updateLocalStorage() {
-  localStorage.setItem("state", JSON.stringify(state)); //diese Funktion brauchen wir immer, wenn ein todo erzeugt wurde
+  localStorage.setItem("state", JSON.stringify(state)); 
 }
 
 radioButtonsFilter.addEventListener("change", (event) => {
@@ -67,7 +66,7 @@ radioButtonsFilter.addEventListener("change", (event) => {
   render();
 });
 
-//11.
+
 function removeDoneTodos() {
   const newTodoWithDoneFalse = state.todos.filter(
     (todo) => todo.done === false
@@ -93,7 +92,7 @@ removeButton.addEventListener("click", () => {
   render();
 });
 
-//6.
+
 function addNewTodoToState(description1) {
   state.todos.push({
     id: new Date().getTime(), //sekunden seit Januar 1970, geeignet für individuelle id in unserem Fall darf eben pro sekunde eine neue id generiert werden, das reicht für hier...
@@ -103,24 +102,22 @@ function addNewTodoToState(description1) {
 }
 
 addNewTodoButton.addEventListener("click", () => {
-  addNewTodoToState(newTodoInput.value); //hier wird der State aktualisiert, gibt der Variable description1 einen richtigen Wert, nämlich den Eintrag ins Inputfeld
+  addNewTodoToState(newTodoInput.value); 
 
   updateLocalStorage();
 
-  render(); // hier wird die ganze liste neugerendert - nachdem etwas im State hinzugefügt wurde
+  render(); 
 
-  //value des inputfelds nach dem Abschicken wieder löschen
   newTodoInput.value = "";
 });
 
-// addNewTodoToState("Bewerbung schreiben"); bsp. zum Zwischenprüfen
 
-//4. Funktionen aufteilen (hätte man auch in 3 mitschreiben können -> Code aber so lesbarer)
+
 function generateNewTodoListItem(todoData) {
   const listItem = document.createElement("li");
   //listItem.innerText = todoData.description;
 
-  //8.
+
 
   const label = document.createElement("label");
   label.setAttribute("for", "todo-" + todoData.id); //alternativ label.htmlfor = " ";
@@ -130,7 +127,7 @@ function generateNewTodoListItem(todoData) {
   checkbox.id = "todo-" + todoData.id;
   checkbox.type = "checkbox";
 
-  // ===true muss nicht unbedingt geschriebn werden, da automatisch truthy value angenommen wird
+  // ===true muss nicht unbedingt geschrieben werden, da automatisch truthy value angenommen wird
   if (todoData.done === true) {
     checkbox.checked = "checked";
   }
@@ -142,14 +139,13 @@ function generateNewTodoListItem(todoData) {
 
   listItem.append(checkbox, label);
 
-  return listItem; //notwendig, sonst wird nicht gerendert
-}
+  return listItem; 
 
-//3.
+
 function render() {
-  document.querySelector(".todo-list").innerHTML = ""; //Neurendern der ganzen Liste, sonst Dopplungen
-  for (const todoData of todosByFilter) /*Am Anfang war todosByFilter aus 14. noch todo.state*/ {
-    const newTodoListItem = generateNewTodoListItem(todoData); //wird hier aufgerufen, funktion s.o.
+  document.querySelector(".todo-list").innerHTML = ""; 
+  for (const todoData of todosByFilter)  {
+    const newTodoListItem = generateNewTodoListItem(todoData); 
     document.querySelector(".todo-list").appendChild(newTodoListItem);
   }
 }
